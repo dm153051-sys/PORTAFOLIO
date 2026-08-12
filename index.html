@@ -642,7 +642,7 @@
                 ciudad: '',
                 invitados: '',
                 servicios: '',
-                contactoPreferido: ''
+                Telefono: ''
             }
         };
 
@@ -654,7 +654,7 @@
             "Aproximadamente, ¿cuántos invitados estimas que asistirán?",
             "¿Qué servicios o momentos de cobertura fotográfica te interesan más?",
             "¿Cuál es tu numero de telefono para que Coco Medina se ponga en contacto contigo?",
-            "Perfecto, he recopilado la siguiente información para tu evento:\n\n• Nombre: {nombre}\n• Evento: {tipoEvento}\n• Fecha: {fecha}\n• Ciudad: {ciudad}\n• Invitados: {invitados}\n• Servicios: {servicios}\n• Contacto: {contactoPreferido}\n\n¿Deseas que envíe esta solicitud a Coco Medina para que revise tu evento y se comunique contigo personalmente?"
+            "Perfecto, he recopilado la siguiente información para tu evento:\n\n• Nombre: {nombre}\n• Evento: {tipoEvento}\n• Fecha: {fecha}\n• Ciudad: {ciudad}\n• Invitados: {invitados}\n• Servicios: {servicios}\n• Contacto: {Telefono}\n\n¿Deseas que envíe esta solicitud a Coco Medina para que revise tu evento y se comunique contigo personalmente?"
         ];
 
         function formatQuestion(text) {
@@ -665,7 +665,7 @@
                 .replace('{ciudad}', state.data.ciudad)
                 .replace('{invitados}', state.data.invitados)
                 .replace('{servicios}', state.data.servicios)
-                .replace('{contactoPreferido}', state.data.contactoPreferido);
+                .replace('{Telefono}', state.data.contactoPreferido);
         }
 
         function processInput(input) {
@@ -679,7 +679,7 @@
                 case 3: state.data.ciudad = trimmed; break;
                 case 4: state.data.invitados = trimmed; break;
                 case 5: state.data.servicios = trimmed; break;
-                case 6: state.data.contactoPreferido = trimmed; break;
+                case 6: state.data.Telefono = trimmed; break;
                 case 7:
                     const lower = trimmed.toLowerCase();
                     if (lower.includes('sí') || lower.includes('si') || lower.includes('claro') || lower.includes('por supuesto')) {
@@ -707,7 +707,7 @@
                 `• *Ciudad:* ${state.data.ciudad}\n` +
                 `• *Invitados:* ${state.data.invitados}\n` +
                 `• *Servicios:* ${state.data.servicios}\n` +
-                `• *Contacto:* ${state.data.contactoPreferido}`;
+                `• *Telefono:* ${state.data.contactoPreferido}`;
 
             const encodedMessage = encodeURIComponent(summaryText);
             const whatsappNumber = "525567145407";
