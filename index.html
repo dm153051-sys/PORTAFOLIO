@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coco Medina — Fotografía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  /* =====================================================
+     PALETA DE COLORES — cámbialos aquí si quieres otro tono
+     ===================================================== */
+  :root{
+    --bg:        #0e0e0f;   /* fondo, casi negro */
+    --bg-soft:   #17171a;   /* fondo de tarjetas */
+    --text:      #f2f0eb;   /* texto principal, blanco cálido */
+    --muted:     #8a8780;   /* texto secundario / gris cálido */
+    --accent:    #b8935a;   /* dorado, tu color de acento */
+    --line:      #2a2a2c;   /* líneas divisoras */
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    font-weight:300;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1, h2, h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+  }
+
+  .mono{
+    font-family:'JetBrains Mono', monospace;
+    letter-spacing:0.02em;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  /* estructura general */
+  .wrap{
+    max-width:1200px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  /* =====================================================
+     NAVEGACIÓN
+     ===================================================== */
+  nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:rgba(14,14,15,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:76px;
+  }
+  .logo{
+    font-family:'Fraunces', serif;
+    font-size:1.15rem;
+    font-weight:600;
+  }
+  .logo span{ color:var(--accent); }
+  .nav-links{
+    display:flex;
+    gap:36px;
+    font-size:0.85rem;
+  }
+  .nav-links a{
+    color:var(--muted);
+    transition:color 0.25s ease;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+  }
+  .nav-links a:hover{ color:var(--text); }
+
+  /* =====================================================
+     HERO
+     ===================================================== */
+  .hero{
+    min-height:88vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+    border-bottom:1px solid var(--line);
+  }
+  .hero .eyebrow{
+    color:var(--accent);
+    font-size:0.8rem;
+    text-transform:uppercase;
+    letter-spacing:0.18em;
+    margin-bottom:24px;
+  }
+  .hero h1{
+    font-size:clamp(3rem, 9vw, 7.5rem);
+    line-height:0.95;
+    max-width:14ch;
+  }
+  .hero h1 em{
+    font-style:italic;
+    color:var(--accent);
+  }
+  .hero p{
+    max-width:46ch;
+    color:var(--muted);
+    font-size:1.05rem;
+    margin-top:28px;
+  }
+  .hero-frame{
+    position:absolute;
+    right:32px;
+    bottom:48px;
+    text-align:right;
+    color:var(--muted);
+    font-size:0.78rem;
+  }
+
+  /* =====================================================
+     GALERÍA
+     ===================================================== */
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding:80px 0 40px;
+    border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .section-head h2{ font-size:2.2rem; }
+  .section-head .count{
+    color:var(--muted);
+    font-size:0.85rem;
+  }
+
+  .gallery{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:2px;
+    padding:2px 0 100px;
+  }
+  .frame{
+    position:relative;
+    aspect-ratio:4/5;
+    overflow:hidden;
+    background:var(--bg-soft);
+    cursor:pointer;
+  }
+  .frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    filter:grayscale(15%) contrast(1.02);
+    transition:transform 0.7s cubic-bezier(.2,.7,.2,1), filter 0.5s ease;
+  }
+  .frame:hover img{
+    transform:scale(1.05);
+    filter:grayscale(0%) contrast(1.05);
+  }
+  .frame .tag{
+    position:absolute;
+    top:14px;
+    left:14px;
+    font-size:0.7rem;
+    color:var(--text);
+    background:rgba(14,14,15,0.55);
+    backdrop-filter:blur(4px);
+    padding:4px 9px;
+    border-radius:2px;
+    opacity:0;
+    transform:translateY(-4px);
+    transition:all 0.3s ease;
+  }
+  .frame:hover .tag{ opacity:1; transform:translateY(0); }
+
+  .frame.tall{ grid-row:span 2; aspect-ratio:auto; }
+
+  /* =====================================================
+     SOBRE MÍ
+     ===================================================== */
+  .about{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:80px;
+    padding:0 0 120px;
+    border-bottom:1px solid var(--line);
+    align-items:start;
+  }
+  .about h2{ font-size:2.2rem; margin-bottom:28px; }
+  .about p{ color:var(--muted); margin-bottom:18px; max-width:52ch; }
+  .stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:32px;
+    margin-top:36px;
+  }
+  .stat .num{
+    font-family:'Fraunces', serif;
+    font-size:2.4rem;
+    color:var(--accent);
+  }
+  .stat .label{
+    color:var(--muted);
+    font-size:0.8rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    margin-top:4px;
+  }
+
+  /* =====================================================
+     CONTACTO
+     ===================================================== */
+  .contact{
+    padding:120px 0;
+    text-align:center;
+  }
+  .contact .eyebrow{
+    color:var(--accent);
+    font-size:0.8rem;
+    text-transform:uppercase;
+    letter-spacing:0.18em;
+    margin-bottom:20px;
+  }
+  .contact h2{
+    font-size:clamp(2.2rem, 6vw, 4rem);
+    max-width:18ch;
+    margin:0 auto 40px;
+  }
+  .contact-links{
+    display:flex;
+    gap:28px;
+    justify-content:center;
+    flex-wrap:wrap;
+    font-size:1rem;
+    margin-bottom:64px;
+  }
+  .contact-links a{
+    border-bottom:1px solid var(--line);
+    padding-bottom:4px;
+    transition:border-color 0.25s ease, color 0.25s ease;
+  }
+  .contact-links a:hover{
+    color:var(--accent);
+    border-color:var(--accent);
+  }
+
+  /* formulario de contacto */
+  .contact-form{
+    max-width:520px;
+    margin:0 auto;
+    text-align:left;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  .field label{
+    display:block;
+    font-size:0.75rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .field input,
+  .field textarea{
+    width:100%;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    font-size:0.95rem;
+    padding:14px 16px;
+    border-radius:2px;
+    transition:border-color 0.25s ease;
+  }
+  .field input:focus,
+  .field textarea:focus{
+    outline:none;
+    border-color:var(--accent);
+  }
+  .field textarea{
+    resize:vertical;
+    min-height:120px;
+  }
+  .contact-form button{
+    align-self:flex-start;
+    background:var(--accent);
+    color:var(--bg);
+    border:none;
+    font-family:'Inter', sans-serif;
+    font-weight:500;
+    font-size:0.85rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    padding:14px 32px;
+    border-radius:2px;
+    cursor:pointer;
+    transition:opacity 0.25s ease;
+  }
+  .contact-form button:hover{ opacity:0.85; }
+  .form-note{
+    color:var(--muted);
+    font-size:0.78rem;
+    margin-top:-6px;
+  }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:32px 0;
+    display:flex;
+    justify-content:space-between;
+    color:var(--muted);
+    font-size:0.78rem;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  /* =====================================================
+     RESPONSIVE
+     ===================================================== */
+  @media (max-width:860px){
+    .nav-links{ display:none; }
+    .gallery{ grid-template-columns:repeat(2, 1fr); }
+    .about{ grid-template-columns:1fr; gap:40px; }
+    .hero-frame{ display:none; }
+  }
+  @media (max-width:520px){
+    .gallery{ grid-template-columns:1fr; }
+    .wrap{ padding:0 20px; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- =====================================================
+     NAVEGACIÓN — cambia "Coco Medina" por tu nombre
+     ===================================================== -->
+<nav>
+  <div class="wrap">
+    <div class="logo">Coco <span>Medina</span></div>
+    <div class="nav-links">
+      <a href="#trabajo">Trabajo</a>
+      <a href="#sobre-mi">Sobre mí</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </div>
+</nav>
+
+<!-- =====================================================
+     HERO — tu frase de presentación
+     ===================================================== -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Fotógrafa · Ciudad de México</div>
+    <h1>Historias contadas <em>en luz</em> y silencio.</h1>
+    <p>Portafolio de fotografía documental y de retrato. Cada imagen es un fragmento de un momento que no volverá a repetirse.</p>
+  </div>
+  <div class="hero-frame wrap mono">
+    N° 001 — 024<br>2026
+  </div>
+</header>
+
+<!-- =====================================================
+     GALERÍA — reemplaza los "src" por el nombre de tus fotos
+     Sube tus fotos a una carpeta llamada "fotos" junto a este
+     archivo, y escribe aquí: fotos/nombre-de-tu-foto.jpg
+     ===================================================== -->
+<section id="trabajo" class="wrap">
+  <div class="section-head">
+    <h2>Trabajo seleccionado</h2>
+    <div class="count mono">24 imágenes</div>
+  </div>
+
+  <div class="gallery">
+    <div class="frame tall">
+      <img src="fotos/foto-01.jpg" alt="Descripción de la foto 1">
+      <div class="tag mono">N° 001</div>
+    </div>
+    <div class="frame">
+      <img src="fotos/foto-02.jpg" alt="Descripción de la foto 2">
+      <div class="tag mono">N° 002</div>
+    </div>
+    <div class="frame">
+      <img src="fotos/foto-03.jpg" alt="Descripción de la foto 3">
+      <div class="tag mono">N° 003</div>
+    </div>
+    <div class="frame">
+      <img src="fotos/foto-04.jpg" alt="Descripción de la foto 4">
+      <div class="tag mono">N° 004</div>
+    </div>
+    <div class="frame tall">
+      <img src="fotos/foto-05.jpg" alt="Descripción de la foto 5">
+      <div class="tag mono">N° 005</div>
+    </div>
+    <div class="frame">
+      <img src="fotos/foto-06.jpg" alt="Descripción de la foto 6">
+      <div class="tag mono">N° 006</div>
+    </div>
+    <div class="frame">
+      <img src="fotos/foto-07.jpg" alt="Descripción de la foto 7">
+      <div class="tag mono">N° 007</div>
+    </div>
+    <div class="frame">
+      <img src="fotos/foto-08.jpg" alt="Descripción de la foto 8">
+      <div class="tag mono">N° 008</div>
+    </div>
+    <div class="frame">
+      <img src="fotos/foto-09.jpg" alt="Descripción de la foto 9">
+      <div class="tag mono">N° 009</div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     SOBRE MÍ — escribe tu propia biografía aquí
+     ===================================================== -->
+<section id="sobre-mi" class="wrap">
+  <div class="about">
+    <div>
+      <h2>Sobre mí</h2>
+      <p>Soy fotógrafa independiente, especializada en retrato y documental. Trabajo con luz natural y me interesa capturar lo que pasa cuando nadie está posando.</p>
+      <p>Disponible para sesiones, eventos y proyectos editoriales en Ciudad de México y alrededores.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat">
+          <div class="num">8+</div>
+          <div class="label">Años de experiencia</div>
+        </div>
+        <div class="stat">
+          <div class="num">120+</div>
+          <div class="label">Proyectos entregados</div>
+        </div>
+        <div class="stat">
+          <div class="num">35</div>
+          <div class="label">Clientes recurrentes</div>
+        </div>
+        <div class="stat">
+          <div class="num">3</div>
+          <div class="label">Exposiciones</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     CONTACTO — cambia el correo y redes por los tuyos
+     ===================================================== -->
+<section id="contacto" class="wrap">
+  <div class="contact">
+    <div class="eyebrow">Trabajemos juntos</div>
+    <h2>¿Tienes un proyecto en mente?</h2>
+    <div class="contact-links">
+      <a href="mailto:coco@ejemplo.com">coco@ejemplo.com</a>
+      <a href="https://instagram.com/tu_usuario" target="_blank">Instagram</a>
+      <a href="https://wa.me/521234567890" target="_blank">WhatsApp</a>
+    </div>
+
+    <!-- ==================================================
+         FORMULARIO DE CONTACTO
+         No depende de ningún servicio externo: al dar clic en
+         "Enviar mensaje" se abre la app de correo del visitante
+         con todo ya escrito, listo para mandarte a ti.
+         Cambia "coco@ejemplo.com" por tu correo real abajo.
+         ================================================== -->
+    <form class="contact-form" id="contact-form">
+      <div class="field">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required>
+      </div>
+      <div class="field">
+        <label for="correo">Tu correo</label>
+        <input type="email" id="correo" name="correo" required>
+      </div>
+      <div class="field">
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" name="mensaje" required></textarea>
+      </div>
+      <button type="submit">Enviar mensaje</button>
+      <div class="form-note">Al enviar se abrirá tu aplicación de correo con el mensaje listo.</div>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Al enviar el formulario, arma un mailto: con los datos y lo abre.
+  // CAMBIA el correo de abajo por el tuyo.
+  document.getElementById('contact-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var miCorreo = 'coco@ejemplo.com';
+    var nombre = document.getElementById('nombre').value;
+    var correo = document.getElementById('correo').value;
+    var mensaje = document.getElementById('mensaje').value;
+
+    var asunto = encodeURIComponent('Contacto desde el portafolio — ' + nombre);
+    var cuerpo = encodeURIComponent(
+      'Nombre: ' + nombre + '\n' +
+      'Correo: ' + correo + '\n\n' +
+      'Mensaje:\n' + mensaje
+    );
+
+    window.location.href = 'mailto:' + miCorreo + '?subject=' + asunto + '&body=' + cuerpo;
+  });
+</script>
+
+<footer class="wrap">
+  <div>© 2026 Coco Medina Fotografía</div>
+  <div class="mono">Ciudad de México</div>
+</footer>
+
+</body>
+</html>
