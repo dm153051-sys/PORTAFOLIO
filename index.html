@@ -334,6 +334,40 @@
   }
 
   /* =====================================================
+     ASISTENTE CONVERSACIONAL PROFESIONAL (MODULAR)
+     ===================================================== */
+  @keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(184, 147, 90, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(184, 147, 90, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(184, 147, 90, 0); }
+  }
+
+  .chat-bubble-user {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 10px 14px;
+    border-radius: 8px 8px 0 8px;
+    font-size: 0.85rem;
+    max-width: 85%;
+    align-self: flex-end;
+    margin-bottom: 8px;
+  }
+
+  .chat-bubble-bot {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px 8px 8px 0;
+    font-size: 0.85rem;
+    max-width: 88%;
+    align-self: flex-start;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    white-space: pre-line;
+  }
+
+  /* =====================================================
      RESPONSIVE
      ===================================================== */
   @media (max-width:860px){
@@ -553,45 +587,194 @@
 </footer>
 
 <!-- =====================================================
-     ASISTENTE INTELIGENTE FLOTANTE
+     ASISTENTE CONVERSACIONAL MODULAR (ARQUITECTURA LISTA PARA IA Y WEBHOOK)
      ===================================================== -->
-<div id="ai-widget" style="position:fixed; bottom:20px; right:20px; z-index:99;">
-    <div id="ai-box" style="display:none; width:260px; background:var(--bg-soft); border:1px solid var(--line); border-radius:8px; padding:15px; margin-bottom:10px; box-shadow:0 10px 20px rgba(0,0,0,0.5);">
-        <p style="font-size:0.85rem; margin-bottom:12px; color:var(--text); font-weight:400;">¿Qué deseas hacer?</p>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-            <button class="ai-action-btn" data-action="correo" style="background:var(--bg); border:1px solid var(--line); color:var(--text); padding:8px 12px; border-radius:4px; text-align:left; cursor:pointer; font-size:0.8rem; transition:border-color 0.2s;">Correo</button>
-            <button class="ai-action-btn" data-action="whatsapp" style="background:var(--bg); border:1px solid var(--line); color:var(--text); padding:8px 12px; border-radius:4px; text-align:left; cursor:pointer; font-size:0.8rem; transition:border-color 0.2s;">WhatsApp</button>
-            <button class="ai-action-btn" data-action="instagram" style="background:var(--bg); border:1px solid var(--line); color:var(--text); padding:8px 12px; border-radius:4px; text-align:left; cursor:pointer; font-size:0.8rem; transition:border-color 0.2s;">Instagram</button>
+<div id="ai-widget" style="position:fixed; bottom:24px; right:24px; z-index:99; font-family:'Inter', sans-serif;">
+    <!-- Ventana de Chat -->
+    <div id="ai-box" style="display:none; width:320px; height:420px; background:var(--bg-soft); border:1px solid var(--line); border-radius:12px; margin-bottom:12px; box-shadow:0 15px 30px rgba(0,0,0,0.6); backdrop-filter:blur(10px); flex-direction:column; overflow:hidden;">
+        
+        <!-- Cabecera -->
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--line); background:var(--bg);">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:8px; height:8px; background:#4ade80; border-radius:50%; box-shadow:0 0 8px #4ade80;"></span>
+                <span class="mono" style="font-size:0.75rem; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em;">Asistente Coco Medina</span>
+            </div>
+            <button id="ai-close" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem;">&times;</button>
+        </div>
+
+        <!-- Contenedor de Mensajes -->
+        <div id="chat-messages" style="flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+            <!-- Los mensajes se inyectan dinámicamente -->
+        </div>
+
+        <!-- Barra de Entrada -->
+        <div style="padding:12px; border-top:1px solid var(--line); background:var(--bg); display:flex; gap:8px;">
+            <input type="text" id="chat-input" placeholder="Escribe tu respuesta..." style="flex:1; background:var(--bg-soft); border:1px solid var(--line); color:var(--text); padding:8px 12px; border-radius:6px; font-size:0.82rem; font-family:'Inter', sans-serif;">
+            <button id="chat-send" style="background:var(--accent); color:var(--bg); border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.8rem;">Enviar</button>
         </div>
     </div>
-    <button id="ai-toggle" style="background:var(--accent); color:var(--bg); border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:600; font-size:0.8rem; text-transform:uppercase;">Asistente</button>
+
+    <!-- Botón flotante -->
+    <button id="ai-toggle" style="background:var(--accent); color:var(--bg); border:none; padding:12px 22px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em; display:flex; align-items:center; gap:8px; animation: pulseGlow 3s infinite; transition:transform 0.2s;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        Asistente IA
+    </button>
 </div>
 
 <script>
+    /**
+     * ARQUITECTURA MODULAR DEL ASISTENTE (GitHub Pages / Webhook Ready)
+     * Diseñado para facilitar la integración futura con LLMs y WhatsApp Business API.
+     */
+    const AssistantModule = (() => {
+        let state = {
+            step: 0,
+            data: {
+                nombre: '',
+                tipoEvento: '',
+                fecha: '',
+                ciudad: '',
+                invitados: '',
+                servicios: '',
+                contactoPreferido: ''
+            }
+        };
+
+        const questions = [
+            "¡Hola! Qué gusto saludarte. Soy el asistente virtual de Coco Medina. Para comenzar, ¿cuál es tu nombre?",
+            "Mucho gusto, {nombre}. ¿Qué tipo de evento estás planeando?",
+            "¿Qué fecha tienes programada para el evento?",
+            "¿En qué ciudad o ubicación se llevará a cabo?",
+            "Aproximadamente, ¿cuántos invitados estimas que asistirán?",
+            "¿Qué servicios o momentos de cobertura fotográfica te interesan más?",
+            "¿Cuál es tu medio de contacto preferido (teléfono, correo o Instagram)?",
+            "Perfecto, he recopilado la siguiente información para tu evento:\n\n• Nombre: {nombre}\n• Evento: {tipoEvento}\n• Fecha: {fecha}\n• Ciudad: {ciudad}\n• Invitados: {invitados}\n• Servicios: {servicios}\n• Contacto: {contactoPreferido}\n\n¿Deseas que envíe esta solicitud a Coco Medina para que revise tu evento y se comunique contigo personalmente?"
+        ];
+
+        function formatQuestion(text) {
+            return text
+                .replace('{nombre}', state.data.nombre)
+                .replace('{tipoEvento}', state.data.tipoEvento)
+                .replace('{fecha}', state.data.fecha)
+                .replace('{ciudad}', state.data.ciudad)
+                .replace('{invitados}', state.data.invitados)
+                .replace('{servicios}', state.data.servicios)
+                .replace('{contactoPreferido}', state.data.contactoPreferido);
+        }
+
+        function processInput(input) {
+            const trimmed = input.trim();
+            if (!trimmed) return null;
+
+            switch (state.step) {
+                case 0: state.data.nombre = trimmed; break;
+                case 1: state.data.tipoEvento = trimmed; break;
+                case 2: state.data.fecha = trimmed; break;
+                case 3: state.data.ciudad = trimmed; break;
+                case 4: state.data.invitados = trimmed; break;
+                case 5: state.data.servicios = trimmed; break;
+                case 6: state.data.contactoPreferido = trimmed; break;
+                case 7:
+                    const lower = trimmed.toLowerCase();
+                    if (lower.includes('sí') || lower.includes('si') || lower.includes('claro') || lower.includes('por supuesto')) {
+                        dispatchToBackend();
+                        return "¡Excelente! He enviado tu solicitud directamente a Coco Medina. Se pondrá en contacto contigo muy pronto. ¡Que tengas un gran día!";
+                    } else {
+                        state.step = -1;
+                        return "Entendido. No se ha enviado la solicitud. Si cambias de opinión, puedes escribirnos por los canales habituales. ¡Saludos!";
+                    }
+            }
+
+            state.step++;
+            if (state.step < questions.length) {
+                return formatQuestion(questions[state.step]);
+            }
+            return null;
+        }
+
+        function dispatchToBackend() {
+            const summaryText = 
+                `*Nueva Solicitud de Evento - Portafolio*\n\n` +
+                `• *Nombre:* ${state.data.nombre}\n` +
+                `• *Evento:* ${state.data.tipoEvento}\n` +
+                `• *Fecha:* ${state.data.fecha}\n` +
+                `• *Ciudad:* ${state.data.ciudad}\n` +
+                `• *Invitados:* ${state.data.invitados}\n` +
+                `• *Servicios:* ${state.data.servicios}\n` +
+                `• *Contacto:* ${state.data.contactoPreferido}`;
+
+            const encodedMessage = encodeURIComponent(summaryText);
+            const whatsappNumber = "525567145407";
+            const webhookUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+            console.log("Payload listo para Backend / Webhook:", state.data);
+
+            setTimeout(() => {
+                window.open(webhookUrl, '_blank');
+            }, 1200);
+        }
+
+        function getInitialMessage() {
+            state.step = 0;
+            return questions[0];
+        }
+
+        return {
+            processInput,
+            getInitialMessage,
+            isFinished: () => state.step >= questions.length
+        };
+    })();
+
     const aiToggle = document.getElementById('ai-toggle');
     const aiBox = document.getElementById('ai-box');
-    const actionButtons = document.querySelectorAll('.ai-action-btn');
+    const aiClose = document.getElementById('ai-close');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
 
-    aiToggle.onclick = () => {
-        aiBox.style.display = aiBox.style.display === 'none' ? 'block' : 'none';
-    };
+    let initialized = false;
 
-    actionButtons.forEach(button => {
-        button.onmouseover = () => { button.style.borderColor = 'var(--accent)'; };
-        button.onmouseout = () => { button.style.borderColor = 'var(--line)'; };
+    function appendMessage(text, sender) {
+        const div = document.createElement('div');
+        div.className = sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot';
+        div.innerText = text;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
 
-        button.onclick = () => {
-            const action = button.getAttribute('data-action');
-            if (action === 'correo') {
-                window.open('https://mail.google.com/mail/?view=cm&fs=1&to=dm153051@gmail.com', '_blank');
-            } else if (action === 'whatsapp') {
-                window.open('https://wa.me/525567145407', '_blank');
-            } else if (action === 'instagram') {
-                window.open('https://instagram.com/coco_medina_music', '_blank');
+    function startChat() {
+        if (!initialized) {
+            aiBox.style.display = 'flex';
+            appendMessage(AssistantModule.getInitialMessage(), 'bot');
+            initialized = true;
+        } else {
+            aiBox.style.display = aiBox.style.display === 'none' ? 'flex' : 'none';
+        }
+    }
+
+    aiToggle.onclick = startChat;
+    aiClose.onclick = () => { aiBox.style.display = 'none'; };
+
+    function handleUserMessage() {
+        const text = chatInput.value;
+        if (!text) return;
+
+        appendMessage(text, 'user');
+        chatInput.value = '';
+
+        setTimeout(() => {
+            const nextResponse = AssistantModule.processInput(text);
+            if (nextResponse) {
+                appendMessage(nextResponse, 'bot');
             }
-            aiBox.style.display = 'none';
-        };
-    });
+        }, 400);
+    }
+
+    chatSend.onclick = handleUserMessage;
+    chatInput.onkeypress = (e) => {
+        if (e.key === 'Enter') handleUserMessage();
+    };
 </script>
 
 </body>
