@@ -186,6 +186,62 @@
   .frame.tall{ grid-row:span 2; aspect-ratio:auto; }
 
   /* =====================================================
+     VISOR DE FOTOS (LIGHTBOX) CON FONDO #4B1E3A
+     ===================================================== */
+  #lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(75, 30, 58, 0.95); /* Color #4B1E3A con opacidad */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    backdrop-filter: blur(5px);
+  }
+
+  #lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #lightbox img {
+    max-width: 90%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(.2,.7,.2,1);
+  }
+
+  #lightbox.active img {
+    transform: scale(1); /* Animación de sobresalir */
+  }
+
+  #lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 2.5rem;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: color 0.2s;
+  }
+
+  #lightbox-close:hover {
+    color: var(--accent);
+  }
+
+  /* =====================================================
      SOBRE MÍ
      ===================================================== */
   .about{
@@ -488,6 +544,12 @@
   </div>
 </section>
 
+<!-- VISOR MODAL PARA LA ANIMACIÓN DE LA FOTO -->
+<div id="lightbox">
+  <button id="lightbox-close">&times;</button>
+  <img id="lightbox-img" src="" alt="Ampliada">
+</div>
+
 <!-- =====================================================
      SOBRE MÍ
      ===================================================== -->
@@ -572,6 +634,32 @@
     );
 
     window.location.href = 'mailto:' + miCorreo + '?subject=' + asunto + '&body=' + cuerpo;
+  });
+
+  /* SCRIPT PARA EL LIGHTBOX / ANIMACIÓN DE LAS FOTOS */
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const frames = document.querySelectorAll('.frame');
+
+  frames.forEach(frame => {
+    frame.addEventListener('click', () => {
+      const img = frame.querySelector('img');
+      lightboxImg.src = img.src;
+      lightbox.classList.add('active');
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    setTimeout(() => { lightboxImg.src = ''; }, 400);
+  }
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      closeLightbox();
+    }
   });
 </script>
 
@@ -733,14 +821,11 @@
     let isListening = false;
     let selectedVoice = null;
 
-    // Selección automática de voz natural en español de México o la mejor alternativa en español
     function loadBestVoice() {
         if (!('speechSynthesis' in window)) return;
         const voices = window.speechSynthesis.getVoices();
-        // Buscar primero español de México (es-MX)
         selectedVoice = voices.find(v => v.lang === 'es-MX' || v.lang === 'es_MX');
         if (!selectedVoice) {
-            // Buscar cualquier variante de español natural o general
             selectedVoice = voices.find(v => v.lang.startsWith('es'));
         }
     }
@@ -750,11 +835,9 @@
         loadBestVoice();
     }
 
-    // Configuración de Síntesis de Voz (Text-to-Speech) optimizada para evitar bucles
     function speakText(text) {
         if (!voiceActive || !('speechSynthesis' in window)) return;
         
-        // Detener cualquier audio anterior y apagar el micrófono inmediatamente para evitar eco/bucle
         window.speechSynthesis.cancel();
         stopListening();
 
@@ -767,7 +850,6 @@
         utterance.rate = 1.0;
         
         utterance.onend = () => {
-            // Solo reactivar la escucha si el modo voz sigue activo y el asistente sigue abierto
             if (voiceActive && recognition && !AssistantModule.isFinished() && aiBox.style.display === 'flex') {
                 startListening();
             }
@@ -776,7 +858,6 @@
         window.speechSynthesis.speak(utterance);
     }
 
-    // Configuración de Reconocimiento de Voz (Speech-to-Text)
     if ('webkitSpeechRecognition' in window || 'speechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
@@ -814,9 +895,7 @@
         if (!recognition || !voiceActive || isListening) return;
         try {
             recognition.start();
-        } catch (e) {
-            // Ya iniciado o bloqueado
-        }
+        } catch (e) {}
     }
 
     function stopListening() {
@@ -830,7 +909,6 @@
         chatInput.placeholder = 'Escribe o habla...';
     }
 
-    // Alternar o activar modo voz al pulsar el micrófono
     micToggle.onclick = () => {
         if (!recognition) {
             alert("Tu navegador no soporta el reconocimiento por voz. Continuaremos en modo texto.");
@@ -845,7 +923,6 @@
         }
     };
 
-    // Si el usuario empieza a escribir manualmente, permanece en modo texto sin interrumpir
     chatInput.oninput = () => {
         if (voiceActive) {
             voiceActive = false;
@@ -877,7 +954,6 @@
             if (aiBox.style.display === 'flex' && voiceActive && recognition) {
                 setTimeout(startListening, 600);
             } else if (aiBox.style.display === 'none') {
-                // Detener todo de inmediato al cerrar
                 if ('speechSynthesis' in window) window.speechSynthesis.cancel();
                 stopListening();
                 voiceActive = false;
