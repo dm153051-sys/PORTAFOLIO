@@ -6,7 +6,7 @@
 <title>Coco Medina — Fotografía documental y retrato en CDMX</title>
 <meta name="description" content="Portafolio de Coco Medina, fotógrafa documental y de retrato en la Ciudad de México. Sesiones, eventos y proyectos editoriales con luz natural.">
 <meta name="author" content="Coco Medina">
-<meta name="theme-color" content="#0e0e0f">
+<meta name="theme-color" content="#0b0b0c">
 <meta name="color-scheme" content="dark">
 
 <!-- Open Graph / Twitter (al publicar, añade og:url y og:image con tu dominio real) -->
@@ -32,16 +32,18 @@
      1. TOKENS DE DISEÑO
      ========================================================= */
   :root{
-    --bg:#0e0e0f;
-    --bg-soft:#17171a;
+    --bg:#0b0b0c;
+    --bg-soft:#141416;
     --text:#f2f0eb;
     --muted:#9a968d;
-    --accent:#b8935a;
-    --accent-hover:#c9a469;
-    --accent-soft:rgba(184,147,90,.16);
+    --accent:#c19a5f;
+    --accent-hover:#d3ad72;
+    --accent-soft:rgba(193,154,95,.16);
     --wine:#4b1e3a;
-    --line:#2a2a2c;
-    --focus:#e9c893;
+    --clay:#c4633f;
+    --pine:#3d6b5e;
+    --line:#26262a;
+    --focus:#eccb95;
 
     --wrap:1200px;
     --gutter:clamp(20px,5vw,32px);
@@ -119,6 +121,13 @@
     font-size:.72rem; letter-spacing:.2em; text-transform:uppercase;
     color:var(--accent);
   }
+  /* Punto de color: el primer guiño, siempre en terracota */
+  .eyebrow::before{
+    content:""; display:inline-block;
+    width:5px; height:5px; margin-right:9px;
+    border-radius:50%; background:var(--clay);
+    vertical-align:2px;
+  }
 
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:10px;
@@ -126,11 +135,14 @@
     border:1px solid transparent; border-radius:var(--radius);
     font-family:'Inter',sans-serif; font-size:.82rem; font-weight:500;
     letter-spacing:.06em; text-transform:uppercase;
-    cursor:pointer; transition:background .25s, color .25s, border-color .25s, transform .15s;
+    cursor:pointer; transition:background .25s, color .25s, border-color .25s, transform .15s, box-shadow .3s;
   }
   .btn:active{ transform:translateY(1px); }
   .btn-primary{ background:var(--accent); color:var(--bg); }
-  .btn-primary:hover{ background:var(--accent-hover); }
+  .btn-primary:hover{
+    background:var(--accent-hover);
+    box-shadow:0 12px 30px rgba(193,154,95,.25);
+  }
   .btn-ghost{ border-color:var(--line); color:var(--text); background:transparent; }
   .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
 
@@ -145,7 +157,7 @@
   /* El blur solo en escritorio: es caro de repintar al hacer scroll */
   @supports (backdrop-filter:blur(1px)){
     @media (min-width:861px){
-      .site-header{ background:rgba(14,14,15,.88); backdrop-filter:blur(10px); }
+      .site-header{ background:rgba(11,11,12,.88); backdrop-filter:blur(10px); }
     }
   }
 
@@ -302,29 +314,56 @@
     overflow:hidden;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
+    /* Color del "papel" que aparece detrás y ángulo de inclinación */
+    --mat:var(--accent);
+    --tilt:-1.4deg;
   }
+  /* Retícula de color: se revela al retirarse la foto */
+  .frame::before{
+    content:""; position:absolute; inset:0;
+    background:var(--mat);
+    opacity:0;
+    transition:opacity .4s var(--ease);
+  }
+  .frame:nth-child(4n+2){ --mat:var(--wine); --tilt:1.4deg; }
+  .frame:nth-child(4n+3){ --mat:var(--clay); --tilt:-1.8deg; }
+  .frame:nth-child(4n+4){ --mat:var(--pine); --tilt:1.8deg; }
+
   .frame img{
+    position:relative; z-index:1;
     width:100%; height:100%; object-fit:cover;
     filter:grayscale(12%) contrast(1.02);
-    transition:transform .6s var(--ease), filter .5s ease;
+    transition:transform .55s var(--ease), filter .4s ease, box-shadow .4s ease;
   }
   .frame.tall{ grid-row:span 2; aspect-ratio:auto; }
   .frame:focus-visible{ outline:3px solid var(--focus); outline-offset:-3px; }
 
   .tag{
-    position:absolute; top:12px; left:12px;
+    position:absolute; top:12px; left:12px; z-index:2;
     padding:4px 9px; border-radius:2px;
-    background:rgba(14,14,15,.55);
-    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
-    font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.04em;
-    opacity:0; transform:translateY(-4px);
+    background:var(--text); color:var(--bg);
+    font-family:'JetBrains Mono',monospace; font-size:.66rem; letter-spacing:.04em;
+    opacity:0; transform:translateY(-6px);
     transition:opacity .3s, transform .3s;
   }
 
   /* Efectos solo donde hay ratón de verdad */
   @media (hover:hover) and (pointer:fine){
-    .frame:hover img{ transform:scale(1.04); filter:grayscale(0) contrast(1.04); }
-    .frame:hover .tag, .frame:focus-visible .tag{ opacity:1; transform:none; }
+    .frame:hover::before,
+    .frame:focus-visible::before{ opacity:1; }
+
+    .frame:hover img,
+    .frame:focus-visible img{
+      transform:scale(.94) rotate(var(--tilt));
+      filter:grayscale(0) contrast(1.04) saturate(1.06);
+      box-shadow:0 24px 50px rgba(0,0,0,.5);
+    }
+
+    .frame:hover .tag,
+    .frame:focus-visible .tag{
+      opacity:1;
+      transform:translateY(0) rotate(-2deg);
+    }
   }
   /* En táctil el número se ve siempre */
   @media (hover:none){
@@ -426,6 +465,9 @@
     font-size:clamp(2rem,4vw,2.4rem); line-height:1;
     color:var(--accent);
   }
+  /* Cada cifra con su color: dos datos, dos tonos */
+  .stat:nth-child(2) dt{ color:var(--clay); }
+  .stat:nth-child(3) dt{ color:var(--pine); }
   .stat dd{
     margin:6px 0 0;
     font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
@@ -447,9 +489,10 @@
   .stats-credit .mono{
     flex:0 0 auto;
     padding:2px 7px;
-    border:1px solid var(--line); border-radius:2px;
+    border:1px solid rgba(196,99,63,.5); border-radius:2px;
     font-size:.66rem; letter-spacing:.12em; text-transform:uppercase;
-    color:var(--accent);
+    color:var(--clay);
+    transform:rotate(-2deg);   /* etiqueta pegada, no impresa */
   }
   @media (max-width:860px){
     .about{ grid-template-columns:1fr; }
@@ -529,7 +572,7 @@
   }
 
   /* =========================================================
-     11. COTIZADOR (EX ASISTENTE IA)
+     11. COTIZADOR CONVERSACIONAL
      ========================================================= */
   .chat{
     position:fixed; right:16px; bottom:16px; z-index:90;
@@ -572,10 +615,14 @@
   .chat-panel.is-open{ display:flex; }
 
   .chat-head{
+    position:relative;
     display:flex; align-items:center; justify-content:space-between; gap:12px;
-    padding:12px 14px;
+    padding:12px 14px 14px;
     background:var(--bg); border-bottom:1px solid var(--line);
   }
+  .chat-head-main{ min-width:0; }
+  .chat-head-actions{ display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+
   .chat-title{
     display:block;
     font-family:'JetBrains Mono',monospace;
@@ -587,7 +634,29 @@
     font-family:'Inter',sans-serif;
     font-size:.68rem; letter-spacing:0; text-transform:none;
     color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
+
+  /* Salida directa a WhatsApp, siempre visible */
+  .chat-wa{
+    font-size:.66rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted);
+    padding-bottom:2px;
+    border-bottom:1px solid var(--line);
+    transition:color .2s, border-color .2s;
+  }
+  .chat-wa:hover{ color:var(--accent); border-color:var(--accent); }
+
+  .chat-progress{
+    position:absolute; left:0; right:0; bottom:0;
+    height:2px; background:var(--line);
+  }
+  .chat-progress span{
+    display:block; width:0; height:100%;
+    background:linear-gradient(90deg, var(--accent), var(--clay));
+    transition:width .45s var(--ease);
+  }
+
   .chat-close{
     display:inline-flex; align-items:center; justify-content:center;
     width:32px; height:32px; padding:0;
@@ -620,7 +689,7 @@
     border-bottom-right-radius:2px;
   }
 
-  /* Indicador "escribiendo": tres puntos antes de cada pregunta del bot */
+  /* Indicador "escribiendo": tres puntos antes de cada mensaje del bot */
   .typing{
     display:inline-flex; align-items:center; gap:4px;
     align-self:flex-start;
@@ -640,6 +709,29 @@
     0%, 60%, 100%{ transform:translateY(0); opacity:.35; }
     30%{ transform:translateY(-4px); opacity:1; }
   }
+
+  /* Respuestas rápidas: fuera del aria-live para no saturar al lector */
+  .chat-chips{
+    display:flex; flex-wrap:wrap; gap:6px;
+    padding:0 12px;
+    background:var(--bg);
+  }
+  .chat-chips:not(:empty){ padding-bottom:10px; }
+
+  .chip{
+    border:1px solid var(--line); border-radius:999px;
+    background:var(--bg-soft); color:var(--text);
+    font-family:inherit; font-size:.8rem; line-height:1.2;
+    padding:8px 13px;
+    cursor:pointer;
+    transition:border-color .2s, color .2s, background .2s, transform .15s;
+  }
+  .chip:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+    background:var(--accent-soft);
+  }
+  .chip:active{ transform:translateY(1px); }
 
   .chat-form{
     display:flex; align-items:center; gap:8px;
@@ -694,6 +786,9 @@
      ========================================================= */
   @media (prefers-reduced-motion:reduce){
     html{ scroll-behavior:auto; }
+    /* Sin inclinación ni zoom: solo aparece el color */
+    .frame:hover img,
+    .frame:focus-visible img{ transform:none; }
     *,*::before,*::after{
       animation-duration:.01ms !important;
       animation-iteration-count:1 !important;
@@ -998,16 +1093,23 @@
 <div class="chat" id="chat">
   <section class="chat-panel" id="chat-panel" role="dialog" aria-label="Cotizador de Coco Medina">
     <header class="chat-head">
-      <div>
+      <div class="chat-head-main">
         <span class="chat-title">Cotizador</span>
-        <span class="chat-sub">6 preguntas · menos de 1 minuto</span>
+        <span class="chat-sub" id="chat-sub">Te lleva un minuto</span>
       </div>
-      <button class="chat-close" id="chat-close" type="button" aria-label="Cerrar cotizador">
-        <span aria-hidden="true">✕</span>
-      </button>
+      <div class="chat-head-actions">
+        <a class="chat-wa" id="chat-wa" href="https://wa.me/525567145407?text=Hola%2C%20vi%20el%20portafolio%20y%20quiero%20cotizar%20una%20sesi%C3%B3n." target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <button class="chat-close" id="chat-close" type="button" aria-label="Cerrar cotizador">
+          <span aria-hidden="true">✕</span>
+        </button>
+      </div>
+      <div class="chat-progress" aria-hidden="true"><span id="chat-progress-bar"></span></div>
     </header>
 
     <div class="chat-log" id="chat-log" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+    <!-- Respuestas rápidas: viven fuera del log para no saturar el aria-live -->
+    <div class="chat-chips" id="chat-chips" role="group" aria-label="Respuestas rápidas"></div>
 
     <form class="chat-form" id="chat-form">
       <button class="icon-btn-sm" id="chat-mic" type="button" aria-pressed="false" aria-label="Activar dictado por voz">
@@ -1042,6 +1144,17 @@
   const page = $('#page');
   const root = document.documentElement;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* =========================================================
+     ANALÍTICA (sin dependencias)
+     Si algún día instalas GTM, los eventos llegan a dataLayer.
+     Si instalas GA4 directo, se envían por gtag.
+     ========================================================= */
+  window.dataLayer = window.dataLayer || [];
+  function track(name, props){
+    window.dataLayer.push(Object.assign({ event: name }, props || {}));
+    if (typeof window.gtag === 'function') window.gtag('event', name, props || {});
+  }
 
   /* Bloqueo de scroll con contador (menú y visor pueden turnarse) */
   let locks = 0;
@@ -1179,6 +1292,7 @@
     lockScroll(true);
     lbOpen = true;
     requestAnimationFrame(() => lbClose.focus());
+    track('lightbox_open', { foto: current + 1 });
   }
 
   function closeLightbox(){
@@ -1268,6 +1382,7 @@
       mailLink.className = 'btn btn-primary';
       mailLink.href = mailtoHref;
       mailLink.textContent = 'Abrir mi correo';
+      mailLink.addEventListener('click', () => track('form_choice', { channel: 'email' }));
 
       const waLink = document.createElement('a');
       waLink.className = 'btn btn-ghost';
@@ -1275,16 +1390,19 @@
       waLink.target = '_blank';
       waLink.rel = 'noopener noreferrer';
       waLink.textContent = 'Enviar por WhatsApp';
+      waLink.addEventListener('click', () => track('form_choice', { channel: 'whatsapp' }));
 
       actions.append(mailLink, waLink);
       status.append(text, actions);
       status.hidden = false;
       status.focus();
+
+      track('form_submit');
     });
   }
 
   /* =========================================================
-     COTIZADOR
+     COTIZADOR — flujo conversacional adaptativo
      ========================================================= */
   const chat = $('#chat');
   const panel = $('#chat-panel');
@@ -1294,122 +1412,521 @@
   const chatForm = $('#chat-form');
   const chatInput = $('#chat-input');
   const chatMic = $('#chat-mic');
+  const chipsBox = $('#chat-chips');
+  const progressBar = $('#chat-progress-bar');
+  const chatSub = $('#chat-sub');
+  const chatWa = $('#chat-wa');
 
-  const FIELDS = ['nombre', 'evento', 'fecha', 'ciudad', 'invitados', 'servicios'];
-  const QUESTIONS = [
-    '¡Hola! Qué gusto saludarte. Soy el asistente de Coco Medina. Para empezar, ¿cómo te llamas?',
-    'Mucho gusto, {nombre}. ¿Qué tipo de sesión o evento estás planeando?',
-    '¿Qué fecha tienes en mente?',
-    '¿En qué ciudad o zona sería?',
-    '¿Cuántas personas o invitados, más o menos?',
-    '¿Qué te interesa: retrato, evento completo, editorial o algo más?',
-    'Perfecto, esto es lo que tengo:\n\n• Nombre: {nombre}\n• Proyecto: {evento}\n• Fecha: {fecha}\n• Ciudad: {ciudad}\n• Personas: {invitados}\n• Interés: {servicios}\n\n¿Envío la solicitud a Coco por WhatsApp?'
-  ];
+  /* Todo lo editable del negocio vive aquí. Los precios quedan vacíos:
+     en cuanto los tengas, escribe "desde $X" y aparecen en el chat. */
+  const CONFIG = {
+    email: 'dm153051@gmail.com',
+    phone: '525567145407',
+    packages: [
+      { name: 'Esencia',        detail: '1 hora · 1 locación · 25 fotos editadas', price: '' },
+      { name: 'Día completo',   detail: '4 horas · hasta 80 fotos · galería privada', price: '' },
+      { name: 'Serie documental', detail: '3 sesiones en 6 meses · 60 fotos', price: '' }
+    ]
+  };
 
-  const wizard = { step: 0, data: {}, done: false };
+  const STORE_KEY = 'cm_cotizador_v1';
+  const STORE_DAYS = 7;
+  const state = { data: {}, log: [], sent: false, ts: 0 };
 
-  const format = (text) => text.replace(/\{(\w+)\}/g, (_, key) => wizard.data[key] || '');
-  const resetWizard = () => { wizard.step = 0; wizard.data = {}; wizard.done = false; };
+  let started = false;
+  let typing = false;
+  let typingBubble = null;
 
-  function sendToWhatsApp(){
-    const d = wizard.data;
-    const text = 'Nueva solicitud desde el portafolio\n\n'
-      + '• Nombre: ' + (d.nombre || '') + '\n'
-      + '• Proyecto: ' + (d.evento || '') + '\n'
-      + '• Fecha: ' + (d.fecha || '') + '\n'
-      + '• Ciudad: ' + (d.ciudad || '') + '\n'
-      + '• Personas: ' + (d.invitados || '') + '\n'
-      + '• Interés: ' + (d.servicios || '');
-
-    /* window.open se llama dentro del clic del usuario: no lo bloquea el navegador.
-       Ojo: con la feature "noopener" window.open devuelve siempre null, así que
-       se abre normal y se corta la referencia con opener = null. */
-    const win = window.open('https://wa.me/525567145407?text=' + encodeURIComponent(text), '_blank');
-    if (win){ try { win.opener = null; } catch (_) { /* la pestaña ya no existe */ } }
-    return Boolean(win);
+  /* ---------- Persistencia ---------- */
+  function saveState(){
+    state.ts = Date.now();
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (_) { /* modo privado */ }
   }
 
-  function appendMessage(text, sender){
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return null;
+      const saved = JSON.parse(raw);
+      if (!saved || !Array.isArray(saved.log) || !saved.log.length) return null;
+      if (Date.now() - (saved.ts || 0) > STORE_DAYS * 86400000){
+        localStorage.removeItem(STORE_KEY);
+        return null;
+      }
+      return saved;
+    } catch (_) { return null; }
+  }
+
+  function clearState(){
+    try { localStorage.removeItem(STORE_KEY); } catch (_) { /* ignorar */ }
+  }
+
+  /* ---------- Flujo (se recalcula solo según lo respondido) ---------- */
+  function flowKeys(){
+    const d = state.data;
+    const keys = ['nombre', 'evento', 'detalle', 'fecha', 'zona'];
+    /* Familia y marca ya dicen cuántas personas son en su pregunta de detalle */
+    if (d.evento !== 'Familia' && d.evento !== 'Marca o negocio') keys.push('personas');
+    keys.push('paquete');
+    return keys;
+  }
+
+  function currentKey(){
+    const d = state.data;
+    for (const key of flowKeys()) if (d[key] === undefined) return key;
+    return 'resumen';
+  }
+
+  const STEP = {
+    nombre: () => ({
+      text: 'Para empezar, ¿cómo te llamas?',
+      placeholder: 'Tu nombre'
+    }),
+
+    evento: () => ({
+      text: '¿Qué tienes en mente?',
+      chips: ['Familia', 'Pareja', 'Música o banda', 'Marca o negocio', 'Algo más']
+    }),
+
+    /* Pregunta que cambia según lo que eligió antes: el flujo no es rígido */
+    detalle: () => {
+      const map = {
+        'Familia':         { text: '¿Cuántos peques andan por ahí?', chips: ['1', '2', '3 o más'] },
+        'Pareja':          { text: '¿Es por alguna ocasión?', chips: ['Boda', 'Aniversario', 'Sin ocasión especial'] },
+        'Música o banda':  { text: '¿Qué necesitas exactamente?', chips: ['Concierto en vivo', 'Fotos de prensa', 'Sesión en estudio'] },
+        'Marca o negocio': { text: '¿Qué tipo de contenido te hace falta?', chips: ['Producto', 'Equipo', 'Espacio', 'Redes sociales'] }
+      };
+      return map[state.data.evento] || {
+        text: 'Cuéntame en una línea qué imaginas.',
+        placeholder: 'Tu idea'
+      };
+    },
+
+    fecha: () => ({
+      text: '¿Para cuándo la tienes en mente?',
+      chips: ['Este mes', 'El próximo mes', 'En 2 o 3 meses', 'Todavía no lo sé']
+    }),
+
+    zona: () => ({
+      text: '¿En qué zona sería?',
+      chips: ['Coyoacán', 'Roma o Condesa', 'Centro', 'Otra zona']
+    }),
+
+    personas: () => ({
+      text: '¿Cuántas personas serían?',
+      chips: ['1 o 2', '3 a 5', '6 a 10', 'Más de 10']
+    }),
+
+    paquete: () => ({
+      text: 'Coco trabaja con tres formatos:\n\n'
+        + CONFIG.packages.map(p => '• ' + p.name + ' — ' + p.detail).join('\n')
+        + '\n\n¿Cuál se parece más a lo que buscas?',
+      chips: CONFIG.packages.map(p => p.name).concat('Que me recomiende')
+    })
+  };
+
+  /* Acuse contextual: retoma lo que la persona acaba de decir */
+  function ackFor(key, value){
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    switch (key){
+      case 'nombre':
+        return pick(['Mucho gusto, ' + value + '.', 'Un placer, ' + value + '.']);
+
+      case 'evento': {
+        const map = {
+          'Familia': pick(['Qué bonito. Las sesiones de familia son de mis favoritas.', 'Las de familia son las que más disfruta Coco.']),
+          'Pareja': pick(['Me encanta ese tipo de sesión.', 'Qué buena idea.']),
+          'Música o banda': pick(['Ah, la música. Ahí Coco se siente en casa.', 'La música es su terreno natural.']),
+          'Marca o negocio': pick(['Perfecto, es de los proyectos que más le gustan.', 'Bien, eso da mucho juego.']),
+          'Algo más': pick(['Va, me gusta la idea.', 'Cuéntame.'])
+        };
+        return map[value] || '';
+      }
+
+      case 'detalle':
+        return pick(['Anotado.', 'Perfecto.', 'Bien.']);
+
+      case 'fecha':
+        if (/no lo s[eé]|todav[ií]a/i.test(value)) return pick(['Sin problema, la fecha se ajusta después.', 'No hay prisa: eso se afina sobre la marcha.']);
+        if (/este mes/i.test(value)) return 'Vamos con el tiempo justo, pero todavía hay margen.';
+        return pick(['Bien.', 'Perfecto.']);
+
+      case 'zona':
+        return pick(['Conozco bien esa zona.', 'Esa zona funciona muy bien para sesiones.']);
+
+      case 'personas':
+        return pick(['Anotado.', 'Bien.']);
+
+      case 'paquete':
+        return pick(['Buena elección.', 'Perfecto.']);
+
+      default:
+        return '';
+    }
+  }
+
+  /* ---------- Pintado del chat ---------- */
+  function appendMessage(text, sender, silent){
     const bubble = document.createElement('div');
     bubble.className = 'bubble ' + (sender === 'user' ? 'bubble-user' : 'bubble-bot');
     bubble.textContent = text;
     chatLog.appendChild(bubble);
     chatLog.scrollTop = chatLog.scrollHeight;
-    if (sender === 'bot') speak(text);
+    if (sender === 'bot' && !silent) speak(text);
   }
 
-  /* --- Indicador de "pensando" (tres puntos) --- */
-  let typingEl = null;
-  let pendingReplies = 0;
+  function pushLog(text, sender, silent){
+    state.log.push({ text: text, sender: sender });
+    if (state.log.length > 60) state.log.shift();
+    appendMessage(text, sender, silent);
+    saveState();
+  }
 
-  function showTyping(){
-    if (typingEl) return;
-    typingEl = document.createElement('div');
-    typingEl.className = 'bubble typing';
-    typingEl.setAttribute('aria-hidden', 'true'); /* decorativo: el mensaje real se anuncia al llegar */
-    for (let i = 0; i < 3; i++) typingEl.appendChild(document.createElement('span'));
-    chatLog.appendChild(typingEl);
+  function showTypingBubble(){
+    if (typingBubble) return;
+    typingBubble = document.createElement('div');
+    typingBubble.className = 'bubble typing';
+    typingBubble.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < 3; i++) typingBubble.appendChild(document.createElement('span'));
+    chatLog.appendChild(typingBubble);
     chatLog.scrollTop = chatLog.scrollHeight;
   }
 
-  function hideTyping(){
-    if (!typingEl) return;
-    typingEl.remove();
-    typingEl = null;
+  function hideTypingBubble(){
+    if (!typingBubble) return;
+    typingBubble.remove();
+    typingBubble = null;
   }
 
-  /* Espera proporcional a la longitud de la respuesta, con techo,
-     para que el indicador se sienta natural y no eterno. */
-  function queueBotReply(reply){
-    pendingReplies++;
-    showTyping();
-    const delay = Math.min(1100, 450 + reply.length * 6);
+  function updateProgress(){
+    const keys = flowKeys();
+    const key = currentKey();
+    const index = key === 'resumen' ? keys.length : keys.indexOf(key);
+    const steps = keys.length + 1;
+    const percent = Math.round(((index + 1) / steps) * 100);
 
-    setTimeout(() => {
-      pendingReplies--;
-      if (pendingReplies <= 0) hideTyping();
-      appendMessage(reply, 'bot');
+    progressBar.style.width = percent + '%';
+    chatSub.textContent = key === 'resumen' ? 'Resumen listo' : 'Paso ' + (index + 1) + ' de ' + steps;
+  }
+
+  function renderChips(items){
+    chipsBox.textContent = '';
+    items.forEach(item => {
+      const label = typeof item === 'string' ? item : item.label;
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip';
+      chip.textContent = label;
+      chip.addEventListener('click', () => {
+        if (typing) return;
+        chipsBox.textContent = '';
+        if (typeof item === 'object' && item.action) item.action();
+        else handleAnswer(label);
+      });
+      chipsBox.appendChild(chip);
+    });
+  }
+
+  function clearChips(){ chipsBox.textContent = ''; }
+
+  /* ---------- Motor del diálogo ---------- */
+  function botSay(text, after){
+    typing = true;
+    panel.setAttribute('aria-busy', 'true');
+    showTypingBubble();
+
+    const delay = Math.min(1150, 420 + text.length * 5);
+    window.setTimeout(() => {
+      hideTypingBubble();
+      pushLog(text, 'bot');
+      typing = false;
+      panel.removeAttribute('aria-busy');
+      if (after) after();
     }, delay);
   }
 
-  function handleAnswer(raw){
-    const value = raw.trim().slice(0, 500);
-    if (!value) return null;
+  function ask(key){
+    const step = STEP[key]();
+    const keys = flowKeys();
+    const index = keys.indexOf(key);
+    const previous = index > 0 ? keys[index - 1] : null;
+    const ack = previous ? ackFor(previous, state.data[previous]) : '';
+    const text = ack ? ack + '\n\n' + step.text : step.text;
 
-    if (/^(reiniciar|empezar de nuevo|otra vez)$/i.test(value)){
-      resetWizard();
-      return QUESTIONS[0];
-    }
+    updateProgress();
+    track('chat_step', { step: key });
 
-    if (wizard.done){
-      return 'Ya envié tu solicitud. Si quieres cotizar otro proyecto, escribe «reiniciar».';
-    }
-
-    /* Pasos 0–5: guardar la respuesta y preguntar la siguiente */
-    if (wizard.step < 6){
-      wizard.data[FIELDS[wizard.step]] = value;
-      wizard.step++;
-      return format(QUESTIONS[wizard.step]);
-    }
-
-    /* Paso 6: confirmación (aquí se cierra el flujo, ya no se reinicia solo) */
-    if (/^(s[ií]|claro|por supuesto|correcto|adelante|va|sale|ok|dale|env[ií]a)/i.test(value)){
-      const opened = sendToWhatsApp();
-      wizard.done = true;
-      return opened
-        ? '¡Listo! Abrí WhatsApp con el resumen de tu proyecto para que lo revises y lo envíes. Coco te responderá por ahí.'
-        : 'No pude abrir WhatsApp automáticamente. Escríbeme al +52 55 6714 5407 con este resumen y lo vemos.';
-    }
-
-    if (/^(no|nel|mejor no|cancelar|cancela|despu[eé]s)/i.test(value)){
-      wizard.done = true;
-      return 'Entendido, no envié nada. Si quieres retomarlo, escribe «reiniciar» o escríbeme directo por correo o WhatsApp.';
-    }
-
-    return 'Solo para confirmar: ¿envío la solicitud? Responde «sí» o «no».';
+    botSay(text, () => {
+      if (step.chips) renderChips(step.chips);
+      else clearChips();
+      chatInput.placeholder = step.placeholder || 'Escribe tu respuesta…';
+    });
   }
 
-  /* --- Voz (se inicializa solo cuando se usa por primera vez) --- */
+  function handleAnswer(value){
+    const key = currentKey();
+
+    /* Si ya está en el resumen, cualquier texto simplemente recuerda las opciones */
+    if (key === 'resumen'){
+      pushLog(value, 'user');
+      botSay('Para enviarlo, elige una de las opciones de abajo.', summaryChips);
+      return;
+    }
+
+    state.data[key] = value;
+    pushLog(value, 'user');
+
+    const next = currentKey();
+    if (next === 'resumen') summaryPrompt();
+    else ask(next);
+  }
+
+  function summaryText(){
+    const d = state.data;
+    const lines = [
+      'Listo, ' + d.nombre + '. Esto es lo que tengo:',
+      '',
+      '• Proyecto: ' + d.evento + ' — ' + d.detalle,
+      '• Fecha: ' + d.fecha,
+      '• Zona: ' + d.zona
+    ];
+    if (d.personas) lines.push('• Personas: ' + d.personas);
+    lines.push('• Formato: ' + d.paquete);
+    lines.push('');
+    lines.push('¿Se lo envío a Coco por WhatsApp para que te pase el rango exacto y confirme disponibilidad?');
+    return lines.join('\n');
+  }
+
+  function summaryPlain(){
+    const d = state.data;
+    let out = 'Hola, soy ' + d.nombre + '. Vengo del portafolio.\n\n';
+    out += '• Proyecto: ' + d.evento + ' — ' + d.detalle + '\n';
+    out += '• Fecha: ' + d.fecha + '\n';
+    out += '• Zona: ' + d.zona + '\n';
+    if (d.personas) out += '• Personas: ' + d.personas + '\n';
+    out += '• Formato: ' + d.paquete + '\n\n';
+    out += '¿Me pasas el rango y la disponibilidad?';
+    return out;
+  }
+
+  function summaryChips(){
+    renderChips([
+      { label: 'Enviar por WhatsApp', action: sendSummary },
+      { label: 'Copiar resumen', action: copySummary },
+      { label: 'Enviar por correo', action: emailSummary },
+      { label: 'Empezar de nuevo', action: resetChat }
+    ]);
+  }
+
+  function summaryPrompt(){
+    updateProgress();
+    botSay(summaryText(), () => {
+      summaryChips();
+      track('chat_summary', { paquete: state.data.paquete || '' });
+    });
+  }
+
+  function sendSummary(){
+    const url = 'https://wa.me/' + CONFIG.phone + '?text=' + encodeURIComponent(summaryPlain());
+    const win = window.open(url, '_blank');
+    if (win){ try { win.opener = null; } catch (_) { /* la pestaña ya no existe */ } }
+
+    state.sent = true;
+    pushLog(
+      win
+        ? 'Listo. Abrí WhatsApp con tu resumen: solo dale enviar y Coco te contesta por ahí.'
+        : 'No pude abrir WhatsApp automáticamente. Escríbeme al +52 55 6714 5407 con este resumen y lo vemos.',
+      'bot'
+    );
+
+    progressBar.style.width = '100%';
+    chatSub.textContent = 'Solicitud enviada';
+    renderChips([
+      { label: 'Cotizar otra vez', action: resetChat },
+      { label: 'Abrir WhatsApp', action: openWhatsApp }
+    ]);
+    track('chat_sent', { paquete: state.data.paquete || '' });
+    saveState();
+  }
+
+  function copySummary(){
+    const text = summaryPlain();
+
+    const done = () => {
+      pushLog('Copiado. Pégalo donde quieras.', 'bot');
+      summaryChips();
+    };
+
+    const fallback = () => {
+      const area = document.createElement('textarea');
+      area.value = text;
+      area.setAttribute('readonly', '');
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.appendChild(area);
+      area.select();
+      try { document.execCommand('copy'); done(); }
+      catch (_) { pushLog('No pude copiarlo automáticamente. Selecciona el resumen y cópialo a mano.', 'bot'); }
+      area.remove();
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else {
+      fallback();
+    }
+
+    track('chat_copy');
+  }
+
+  function emailSummary(){
+    const href = 'mailto:' + CONFIG.email
+      + '?subject=' + encodeURIComponent('Solicitud desde el portafolio — ' + (state.data.nombre || ''))
+      + '&body=' + encodeURIComponent(summaryPlain());
+
+    const link = document.createElement('a');
+    link.href = href;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    pushLog('Abrí tu correo con el mensaje listo.', 'bot');
+    track('chat_email');
+  }
+
+  function openWhatsApp(){
+    const win = window.open(
+      'https://wa.me/' + CONFIG.phone + '?text=' + encodeURIComponent('Hola, vi el portafolio y quiero cotizar una sesión.'),
+      '_blank'
+    );
+    if (win){ try { win.opener = null; } catch (_) { /* ignorar */ } }
+    track('wa_click', { source: 'chat' });
+  }
+
+  function resetChat(){
+    clearState();
+    state.data = {};
+    state.log = [];
+    state.sent = false;
+    typing = false;
+
+    chatLog.textContent = '';
+    clearChips();
+    hideTypingBubble();
+    progressBar.style.width = '0%';
+
+    track('chat_reset');
+    greeting();
+  }
+
+  function greetingChips(){
+    renderChips([
+      { label: 'Empecemos', action: () => { pushLog('Empecemos', 'user'); ask('nombre'); } },
+      { label: 'Ver formatos', action: showPackages },
+      { label: 'Prefiero WhatsApp', action: openWhatsApp }
+    ]);
+  }
+
+  function greeting(){
+    chatSub.textContent = 'Te lleva un minuto';
+
+    pushLog(
+      'Hola, soy el asistente de Coco. Te hago unas preguntas cortas y le paso tu idea con todo lo que necesita saber para cotizarte.\n\n¿Empezamos?',
+      'bot'
+    );
+
+    greetingChips();
+    saveState();
+  }
+
+  function showPackages(){
+    pushLog('Ver formatos', 'user');
+
+    const text = 'Estos son los tres formatos de Coco:\n\n'
+      + CONFIG.packages.map(p => '• ' + p.name + ' — ' + p.detail).join('\n')
+      + '\n\nEl precio depende de fecha, zona y número de personas, así que se lo paso a Coco y te responde con el rango exacto.';
+
+    track('chat_packages');
+
+    botSay(text, () => {
+      renderChips([
+        { label: 'Seguir con las preguntas', action: () => { pushLog('Sigamos', 'user'); ask(currentKey()); } },
+        { label: 'Pedir el rango por WhatsApp', action: openWhatsApp }
+      ]);
+    });
+  }
+
+  function initChat(){
+    if (started) return;
+    started = true;
+
+    const saved = loadState();
+
+    if (!saved){
+      greeting();
+      track('chat_open', { resumed: false });
+      return;
+    }
+
+    state.data = saved.data || {};
+    state.log = saved.log || [];
+    state.sent = !!saved.sent;
+
+    chatLog.textContent = '';
+    state.log.forEach(message => appendMessage(message.text, message.sender, true));
+
+    const last = state.log[state.log.length - 1];
+
+    if (state.sent){
+      progressBar.style.width = '100%';
+      chatSub.textContent = 'Solicitud enviada';
+      renderChips([
+        { label: 'Cotizar otra vez', action: resetChat },
+        { label: 'Abrir WhatsApp', action: openWhatsApp }
+      ]);
+    } else if (last && last.sender === 'user'){
+      /* Se cerró mientras el bot "pensaba": se retoma la pregunta pendiente */
+      ask(currentKey());
+    } else if (currentKey() === 'resumen'){
+      updateProgress();
+      summaryChips();
+    } else if (!state.data.nombre){
+      /* Conversación guardada solo con el saludo: se recuperan los botones de inicio */
+      greetingChips();
+      updateProgress();
+    } else {
+      const step = STEP[currentKey()]();
+      if (step.chips) renderChips(step.chips);
+      chatInput.placeholder = step.placeholder || 'Escribe tu respuesta…';
+      updateProgress();
+    }
+
+    track('chat_open', { resumed: true, step: currentKey() });
+    saveState();
+  }
+
+  /* ---------- Abrir / cerrar ---------- */
+  function openChat(){
+    if (!panel || panel.classList.contains('is-open')) return;
+    panel.classList.add('is-open');
+    chat.classList.add('is-open');
+    chatToggle.setAttribute('aria-expanded', 'true');
+    initChat();
+    requestAnimationFrame(() => chatInput.focus());
+  }
+
+  function closeChat(){
+    if (!panel.classList.contains('is-open')) return;
+    panel.classList.remove('is-open');
+    chat.classList.remove('is-open');
+    chatToggle.setAttribute('aria-expanded', 'false');
+    stopVoice();
+    saveState();
+    chatToggle.focus();
+  }
+
+  /* ---------- Voz (se inicializa solo al usarla) ---------- */
   let voiceReady = false;
   let voiceMode = false;
   let listening = false;
@@ -1490,26 +2007,7 @@
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   }
 
-  function openChat(){
-    if (!panel || panel.classList.contains('is-open')) return;
-    panel.classList.add('is-open');
-    chat.classList.add('is-open');
-    chatToggle.setAttribute('aria-expanded', 'true');
-
-    if (!chatLog.childElementCount) appendMessage(format(QUESTIONS[0]), 'bot');
-
-    requestAnimationFrame(() => chatInput.focus());
-  }
-
-  function closeChat(){
-    if (!panel.classList.contains('is-open')) return;
-    panel.classList.remove('is-open');
-    chat.classList.remove('is-open');
-    chatToggle.setAttribute('aria-expanded', 'false');
-    stopVoice();
-    chatToggle.focus();
-  }
-
+  /* ---------- Eventos del cotizador ---------- */
   if (panel && chatToggle){
     chatToggle.addEventListener('click', () => {
       if (panel.classList.contains('is-open')) closeChat();
@@ -1520,23 +2018,23 @@
 
     $$('[data-chat-open]').forEach(btn => btn.addEventListener('click', openChat));
 
+    if (chatWa){
+      chatWa.addEventListener('click', () => track('wa_click', { source: 'chat_header' }));
+    }
+
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && panel.classList.contains('is-open')) closeChat();
     });
 
     chatForm.addEventListener('submit', (event) => {
       event.preventDefault();
+      if (typing) return;
       const value = chatInput.value.trim();
       if (!value) return;
 
-      appendMessage(value, 'user');
       chatInput.value = '';
       stopListening();
-
-      const reply = handleAnswer(value);
-      if (!reply) return;
-
-      queueBotReply(reply);
+      handleAnswer(value);
     });
 
     chatMic.addEventListener('click', () => {
@@ -1547,11 +2045,8 @@
 
       voiceMode = !voiceMode;
 
-      if (voiceMode){
-        startListening();
-      } else {
-        stopVoice();
-      }
+      if (voiceMode) startListening();
+      else stopVoice();
     });
   }
 
