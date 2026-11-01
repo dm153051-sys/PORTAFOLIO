@@ -600,6 +600,27 @@
     border-bottom-right-radius:2px;
   }
 
+  /* Indicador "escribiendo": tres puntos antes de cada pregunta del bot */
+  .typing{
+    display:inline-flex; align-items:center; gap:4px;
+    align-self:flex-start;
+    padding:14px;
+    background:var(--bg); border:1px solid var(--line);
+    border-radius:10px; border-bottom-left-radius:2px;
+  }
+  .typing span{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--muted);
+    animation:typingDot 1.2s ease-in-out infinite;
+  }
+  .typing span:nth-child(2){ animation-delay:.15s; }
+  .typing span:nth-child(3){ animation-delay:.3s; }
+
+  @keyframes typingDot{
+    0%, 60%, 100%{ transform:translateY(0); opacity:.35; }
+    30%{ transform:translateY(-4px); opacity:1; }
+  }
+
   .chat-form{
     display:flex; align-items:center; gap:8px;
     padding:10px;
@@ -1303,6 +1324,40 @@
     if (sender === 'bot') speak(text);
   }
 
+  /* --- Indicador de "pensando" (tres puntos) --- */
+  let typingEl = null;
+  let pendingReplies = 0;
+
+  function showTyping(){
+    if (typingEl) return;
+    typingEl = document.createElement('div');
+    typingEl.className = 'bubble typing';
+    typingEl.setAttribute('aria-hidden', 'true'); /* decorativo: el mensaje real se anuncia al llegar */
+    for (let i = 0; i < 3; i++) typingEl.appendChild(document.createElement('span'));
+    chatLog.appendChild(typingEl);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  function hideTyping(){
+    if (!typingEl) return;
+    typingEl.remove();
+    typingEl = null;
+  }
+
+  /* Espera proporcional a la longitud de la respuesta, con techo,
+     para que el indicador se sienta natural y no eterno. */
+  function queueBotReply(reply){
+    pendingReplies++;
+    showTyping();
+    const delay = Math.min(1100, 450 + reply.length * 6);
+
+    setTimeout(() => {
+      pendingReplies--;
+      if (pendingReplies <= 0) hideTyping();
+      appendMessage(reply, 'bot');
+    }, delay);
+  }
+
   function handleAnswer(raw){
     const value = raw.trim().slice(0, 500);
     if (!value) return null;
@@ -1467,7 +1522,7 @@
       const reply = handleAnswer(value);
       if (!reply) return;
 
-      setTimeout(() => appendMessage(reply, 'bot'), 420);
+      queueBotReply(reply);
     });
 
     chatMic.addEventListener('click', () => {
