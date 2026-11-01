@@ -431,6 +431,26 @@
     font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
     color:var(--muted);
   }
+  /* Nota breve bajo las cifras: explica el "2" sin inflar el currículum */
+  .stats-note{
+    margin-top:clamp(22px,3vw,30px);
+    max-width:36ch;
+    font-size:.85rem; line-height:1.55;
+    color:var(--muted);
+  }
+  /* Reconocimiento destacado: "Canon" como etiqueta + texto */
+  .stats-credit{
+    display:flex; align-items:baseline; flex-wrap:wrap; gap:10px;
+    margin-top:16px;
+    font-size:.85rem; color:var(--muted);
+  }
+  .stats-credit .mono{
+    flex:0 0 auto;
+    padding:2px 7px;
+    border:1px solid var(--line); border-radius:2px;
+    font-size:.66rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--accent);
+  }
   @media (max-width:860px){
     .about{ grid-template-columns:1fr; }
   }
@@ -854,22 +874,16 @@
           <div>
             <dl class="stats">
               <div class="stat">
-                <dt>8+</dt>
+                <dt>2</dt>
                 <dd>Años de experiencia</dd>
               </div>
               <div class="stat">
-                <dt>120+</dt>
-                <dd>Proyectos entregados</dd>
-              </div>
-              <div class="stat">
-                <dt>35</dt>
-                <dd>Clientes recurrentes</dd>
-              </div>
-              <div class="stat">
-                <dt>3</dt>
+                <dt>4</dt>
                 <dd>Exposiciones</dd>
               </div>
             </dl>
+            <p class="stats-note">Llevo dos años detrás de la cámara y sigo formándome: talleres, estudio y cada sesión como aprendizaje.</p>
+            <p class="stats-credit"><span class="mono">Canon</span> Participación en concursos de fotografía</p>
           </div>
         </div>
       </div>
